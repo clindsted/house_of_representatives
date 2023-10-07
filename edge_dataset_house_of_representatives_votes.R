@@ -1028,7 +1028,7 @@ total_votes <- rbind(
 
 ## Social Network Edge Set
 
-merged_votes <- merge(total_votes, total_votes, by.x = "vote",by.y = "vote") %>% filter(names.x != names.y) %>% group_by(names.x, names.y) %>% summarise(shared_votes = n()) %>% ungroup() %>% filter(names.x > names.y) 
+merged_votes <- inner_join(total_votes, total_votes, by = "vote", relationship = "many-to-many") %>% filter(names.x != names.y) %>% group_by(names.x, names.y) %>% summarise(shared_votes = n()) %>% ungroup() %>% filter(names.x > names.y)
 
 head(merged_votes)
 
