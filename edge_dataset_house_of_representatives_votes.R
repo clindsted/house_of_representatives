@@ -8,31 +8,17 @@ get.votes <- function(x){
   table_node <- html_nodes(page,"table") ## list all html tables on the page
   votes <- html_table(table_node)[[2]] ## select table needed
   names(votes) <- c("reps","names","party","state","state_abbrev","vote") ## properly rename columns
-  votes <- votes  %>% select(-reps) %>% filter(names != "No data found") %>% mutate(vote = paste0(vote,id)) ## remove duplicate column and create unique dataset identifier
+  votes <- votes  %>% select(-reps) %>% filter(names != "No data found") %>% mutate(vote = paste0(vote,id)) ## remove duplicate column and make unique table identifier
   return(votes)}
 
 ## 118th Congress Votes
 
-votes_1 <- get.votes('https://clerk.house.gov/Votes/20231?Page=52')
-votes_2 <- get.votes('https://clerk.house.gov/Votes/20232?Page=52')
-votes_3 <- get.votes('https://clerk.house.gov/Votes/20233?Page=52')
-votes_4 <- get.votes('https://clerk.house.gov/Votes/20234?Page=52')
-votes_5 <- get.votes('https://clerk.house.gov/Votes/20235?Page=52')
-votes_6 <- get.votes('https://clerk.house.gov/Votes/20236?Page=52')
-votes_7 <- get.votes('https://clerk.house.gov/Votes/20237?Page=52')
+## Use get.votes function to scrape data. 
+
 votes_8 <- get.votes('https://clerk.house.gov/Votes/20238?Page=52')
-votes_9 <- get.votes('https://clerk.house.gov/Votes/20239?Page=52')
-votes_10 <- get.votes('https://clerk.house.gov/Votes/202310?Page=51')
-votes_11 <- get.votes('https://clerk.house.gov/Votes/202311?Page=51')
-votes_12 <- get.votes('https://clerk.house.gov/Votes/202312?Page=51')
-votes_13 <- get.votes('https://clerk.house.gov/Votes/202313?Page=51')
 votes_14 <- get.votes('https://clerk.house.gov/Votes/202314?Page=51')
-votes_15 <- get.votes('https://clerk.house.gov/Votes/202315?Page=51')
-votes_16 <- get.votes('https://clerk.house.gov/Votes/202316?Page=51')
 votes_17 <- get.votes('https://clerk.house.gov/Votes/202317?Page=51')
-votes_18 <- get.votes('https://clerk.house.gov/Votes/202318?Page=51')
 votes_19 <- get.votes('https://clerk.house.gov/Votes/202319?Page=51')
-votes_20 <- get.votes('https://clerk.house.gov/Votes/202320?Page=50')
 votes_21 <- get.votes('https://clerk.house.gov/Votes/202321?Page=50')
 votes_22 <- get.votes('https://clerk.house.gov/Votes/202322?Page=50')
 votes_23 <- get.votes('https://clerk.house.gov/Votes/202323?Page=50')
@@ -535,26 +521,11 @@ votes_519 <- get.votes('https://clerk.house.gov/Votes/2023519?Page=1')
 
 ## Merge sets
 
-total_votes <- rbind( votes_1,
-                      votes_2,
-                      votes_3,
-                      votes_4,
-                      votes_5,
-                      votes_6,
-                      votes_7,
+total_votes <- rbind(
                       votes_8,
-                      votes_9,
-                      votes_10,
-                      votes_11,
-                      votes_12,
-                      votes_13,
                       votes_14,
-                      votes_15,
-                      votes_16,
                       votes_17,
-                      votes_18,
                       votes_19,
-                      votes_20,
                       votes_21,
                       votes_22,
                       votes_23,
@@ -1055,10 +1026,9 @@ total_votes <- rbind( votes_1,
                       votes_518,
                       votes_519)
 
-## Social Network
+## Social Network Edge Set
 
-merged_votes <- inner_join(total_votes, total_votes, by = "vote", relationship = "many-to-many") %>% filter(names.x != names.y) %>% group_by(names.x, names.y) %>% summarise(count = n()) %>% ungroup() %>% filter(names.x > names.y) %>% mutate(shared_votes = count)
+merged_votes <- merge(total_votes, total_votes, by.x = "vote",by.y = "vote") %>% filter(names.x != names.y) %>% group_by(names.x, names.y) %>% summarise(shared_votes = n()) %>% ungroup() %>% filter(names.x > names.y) 
 
 head(merged_votes)
-
 
